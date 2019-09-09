@@ -20,13 +20,15 @@ class Belief:
      bel_upgrade(self, sensor_output)
     """
 
-    def __init__(self, bel, pos, prob_state, ser, movement_transaction):
+    def __init__(self, bel, pos, prob_state, ser, movement_transaction, exit_transaction, prob_exit_room):
         self.bel = bel
         self.bel_projected = [0 for x in range(0, len(pos))]
         self.pos = pos
         self.prob_state = prob_state
         self.sensors_error_rate = ser
         self._movement_transaction = movement_transaction
+        self._exit_transaction = exit_transaction
+        self._prob_exit_room = prob_exit_room
 
     @property
     def bel(self):
@@ -69,6 +71,8 @@ class Belief:
         self.__sensors_error_rate = sensors_error_rate
 
     def bel_upgrade(self, transactions):
+        self._bel_projected_upgrade(transactions)
+
         temp = []
         if self._movement_transaction in transactions:
             i = transactions.index(self._movement_transaction)
@@ -82,8 +86,35 @@ class Belief:
         eta = 1/sum(self.bel)
         self.bel = [x * eta for x in self.bel]
 
-    def bel_projected_upgrade(self):
-        for i in range(0, len(self.pos)):
-            self.bel_projected[i] = [x * self.bel[i] for x in self.prob_state[i]]
-        self.bel_projected = [sum(x) for x in zip(*self.bel_projected)]
+    def _bel_projected_upgrade(self, transactions):
 
+        def compute_bel_projected(bel,  prob_state):
+            bel_projected = [[] for x in range(0, len(bel))]
+            for i in range(0, len(bel)):
+                bel_projected[i] = [x * bel[i] for x in prob_state[i]]
+            bel_projected = [sum(x) for x in zip(*bel_projected)]
+            return bel_projected
+
+        def compute_prob_state(prob_state, math_waste, index):
+            tmp = prob_state[:]
+            tmp[index] = 0
+            norm = math_waste/sum(tmp)
+            tmp = [norm * x for x in tmp]
+            prob_state = [x+y for x, y in zip(prob_state, tmp)]
+
+            return prob_state
+
+        if self._movement_transaction in transactions:
+            self.bel_projected = compute_bel_projected(self.bel, self.prob_state)
+
+        else:
+            index = transactions.index(self._exit_transaction)
+            state = [[] for x in range(0, len(transactions))]
+            for i, array in enumerate(self.prob_state):
+                state[i] = self.prob_state[i]
+                if self.prob_state[i][index] !=0:
+                    math_waste = state[i][index] - self._prob_exit_room
+                    state[i][index] = self._prob_exit_room
+                    state[i] = compute_prob_state(state[i], math_waste, index)
+
+            self.bel_projected = compute_bel_projected(self.bel, state)

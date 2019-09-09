@@ -23,9 +23,12 @@ def system_set_up():
     prefix = "s"
     ser = []
     movement_transaction = data_config["info"]["movement_transaction"]
+    exit_transaction = data_config["info"]["exit_transaction"]
+    prob_exit_room = data_config["info"]["prob_exit_room"]
+
     for i in pos:
         ser.append(data_config["sensor_error_probability"][prefix+i])
-    belief = Belief.Belief(bel, pos, prob_state, ser, movement_transaction)
+    belief = Belief.Belief(bel, pos, prob_state, ser, movement_transaction, exit_transaction, prob_exit_room)
     return belief, rf
 
 
@@ -64,7 +67,7 @@ if __name__ == "__main__":
     columns = open_json()["info"]["columns_name"]
     df = pd.DataFrame(columns=columns)
     i = 0
-    sensor_measures_previous = [0, 0, 0, 0, 0]
+    sensor_measures_previous = [0 for x in range(0, len(columns)-1)]
 
     while i < len(data_in.index):
 
@@ -74,7 +77,6 @@ if __name__ == "__main__":
         transactions = check_measure(sensor_measures, sensor_measures_previous)
 
         if len(transactions) > 0:
-            belief.bel_projected_upgrade()
             belief.bel_upgrade(transactions)
             
         tmp = {}
