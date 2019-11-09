@@ -64,26 +64,13 @@ def set_ev_level(index):
 
 
 def set_ground_truth_position(ground_truth, n, room, somma):
-    if somma>3 and n==0:
-        ground_truth[n].set_visible(False)
-        ground_truth[n] = set_ground_truth(-1)
-        position = [pos[room][0] - 2.1*(6/len(room_counter)) -(4/8)*(6/len(room_counter)),  # 4/8 è lo spostamento ulteriore solo dopo 3 persone per visualizzare la persona desiderata
+    ground_truth[n].set_visible(False)
+    ground_truth[n] = set_ground_truth(somma - 1)
+    position = [pos[room][0] - 2.1*(6/len(room_counter)) - (somma / 8)*(6/len(room_counter)),
                     pos[room][1] - 0.6*(3/len(room_counter))]  # set person image position near each room
-        img_extent = [position[0] + 1.2*(6/len(room_counter)), position[0], position[1] - 1.2*(6/len(room_counter)), position[1]]
-        ground_truth[n].set_extent(img_extent)
-        ground_truth[n].set_visible(True)
-    else:
-        if n==0:
-            ground_truth[n].set_visible(False)
-            ground_truth[n] = set_ground_truth(-1)
-        else:
-            ground_truth[n].set_visible(False)
-            ground_truth[n] = set_ground_truth(somma - 1)
-        position = [pos[room][0] - 2.1*(6/len(room_counter)) - (somma / 8)*(6/len(room_counter)),
-                    pos[room][1] - 0.6*(3/len(room_counter))]  # set person image position near each room
-        img_extent = [position[0] + 1.2*(6/len(room_counter)), position[0], position[1] - 1.2*(6/len(room_counter)), position[1]]
-        ground_truth[n].set_extent(img_extent)
-        ground_truth[n].set_visible(True)
+    img_extent = [position[0] + 1.2*(6/len(room_counter)), position[0], position[1] - 1.2*(6/len(room_counter)), position[1]]
+    ground_truth[n].set_extent(img_extent)
+    ground_truth[n].set_visible(True)
 
 
 def set_correct_room(i):
@@ -107,11 +94,7 @@ def set_correct_room(i):
                             if somma == 3:
                                 set_ground_truth_position(ground_truth,n,room,somma)
                             if somma > 3:
-                                if n == 0:
-                                    set_ground_truth_position(ground_truth, n, room, somma)
-                                    somma-=1
-                                else:
-                                    ground_truth[n].set_visible(False)
+                                ground_truth[n].set_visible(False)
                                 person_excess[x].set_text(
                                     str(somma - 3) + "+..")  # set text where too much people in one room
                                 person_excess[x].set_visible(True)
@@ -145,9 +128,6 @@ def set_sensors_lamp():
 
 
 def set_ground_truth(i):
-    if i == -1:
-        img = plt.imread("person_green.png")  # person that i want to follow
-        return ax.imshow(img)
     if i == 0:
         image = plt.imread("person.png")
         return ax.imshow(image)
@@ -220,9 +200,6 @@ if __name__ == "__main__":
     sensor_output = plt.text(configurator["text_area_s"]["position"][0],
                              configurator["text_area_s"]["position"][1], "Sensors output",
                              fontsize=configurator["text_area_s"]["font_size"])  # posizione output sensori
-    person_color = plt.text(configurator["text_area_pers"]["position"][0],
-                             configurator["text_area_pers"]["position"][1], "Wanted person color: Green",
-                             fontsize=configurator["text_area_pers"]["font_size"])  # colore prima persona
     configurator2 = utility.open_json(configurator["info"]["adj_file"])
 
     df = utility.read_file(configurator["info"]["input_file"])
@@ -242,19 +219,15 @@ if __name__ == "__main__":
     room_counter = []
     person_counter = []  # contains counter of ground truth for each person in the house
     for room in df.columns[1:len(configurator2["room"]) + 1]:
-        room_counter.append(0)  # room counter for first person
+        room_counter.append(0)  #  conto le stanze
         sensor_lamp.append(set_sensors_lamp())
         G.add_node(room)
     for n in range(0, n_of_person):
-        if n >= 1:
-            room_i = []
-            for room in df.columns[1:len(configurator2["room"]) + 1]:
-                room_i.append(0)
-            ground_truth.append(set_ground_truth(0))
-            person_counter.append(room_i)
-        else:
-            ground_truth.append(set_ground_truth(-1))
-            person_counter.append(room_counter)
+        room_i = []
+        for room in df.columns[1:len(configurator2["room"]) + 1]:
+            room_i.append(0)
+        ground_truth.append(set_ground_truth(0))
+        person_counter.append(room_i)
     for room in df.columns[1:len(configurator2["room"]) + 1]:
         for adj in configurator2["room"][room]:
             G.add_edge(room, adj)
@@ -274,6 +247,10 @@ if __name__ == "__main__":
                                        repeat=False)
         #  animate_filter è la funzione che viene richiamata ad ogni frame
     if sys.argv[1] == "-evtr":
+        frame_time = plt.text(configurator["text_area_frame"]["position"][0],
+                                configurator["text_area_frame"]["position"][1],
+                                "Frame time: " + str(configurator["info"]["time_speed_evtr"]/1000)+"s",
+                                fontsize=configurator["text_area_frame"]["font_size"])
         event = utility.read_file(configurator["info"]["event_file"])
         anim = animation.FuncAnimation(fig, animate_evtr, frames=len(event.index) - 1, init_func=init_filter,
                                        interval=configurator["info"]["time_speed_evtr"], blit=False,

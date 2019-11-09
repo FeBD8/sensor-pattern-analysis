@@ -1,6 +1,6 @@
 {
   "info" : {
-    "input_file_path" : "/home/riccardo/PycharmProjects/sensor-pattern-analysis-Animation-with-Graph/motion-simulator/",
+    "input_file_path" : "/home/riccardo/PycharmProjects/sensor-pattern-analysis/motion-simulator/",
     "input_file_name" :"HF_input.csv",
     "ground_truth_file_name": "out.csv",
     "output_file_name": "HF_out.csv",
