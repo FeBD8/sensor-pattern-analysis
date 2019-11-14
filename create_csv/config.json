@@ -1,12 +1,12 @@
 {
 "input":{
-  "directory":"/home/riccardo/PycharmProjects/sensor-pattern-analysis-Animation-with-Graph/data/",
+  "directory":"/home/riccardo/PycharmProjects/sensor-pattern-analysis/data/",
   "file":["1142_multisensor_4.csv","1142_MotionMultiSensor_7.csv",
     "1142_MotionMultiSensor_9.csv","1142_MotionMultiSensor_11.csv","1142_MotionMultiSensor_19.csv"]
 },
 
 "output_create_hlt":{
-  "directory":"/home/riccardo/PycharmProjects/sensor-pattern-analysis-Animation-with-Graph/hlt-finite-state-machine/FSM_file/",
+  "directory":"/home/riccardo/PycharmProjects/sensor-pattern-analysis/hlt-finite-state-machine/FSM_file/",
   "file":["hlt_4.csv","hlt_7.csv","hlt_9.csv","hlt_11.csv","hlt_19.csv"]
 },
 
