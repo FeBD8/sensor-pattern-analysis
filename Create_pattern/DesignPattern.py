@@ -63,16 +63,16 @@ if __name__ == '__main__':
                 if old_chamber != new_chamber and old_chamber != 0 and new_chamber != 0:
                     probably_adj_matrix[old_chamber - 1][new_chamber - 1] += 1  # add symmetrical adjacencies
                     probably_adj_matrix[new_chamber - 1][old_chamber - 1] += 1
-            y_differences.append(adj_difference(adj_matrix, probably_adj_matrix))
-            x_time.append(int(float(r[0])))
+            #y_differences.append(adj_difference(adj_matrix, probably_adj_matrix))
+            #x_time.append(int(float(r[0])))
         # if i%200 == 0 or i==1:
         # print("Row: "+str(i)+" difference:"+str(adj_difference(adj_matrix,probably_adj_matrix)))
     for i,r in enumerate(rooms):
         print(probably_adj_matrix[i])
         print(adj_matrix[i])
-    plt.xlabel('time(s)')
-    plt.ylabel('adj_difference')
-    plt.plot(x_time, y_differences)
+    #plt.xlabel('time(s)')
+    #plt.ylabel('adj_difference')
+    #plt.plot(x_time, y_differences)
     # x_linspace=numpy.linspace(0, len(HF_out)-1,len(HF_out)-1)
     # popt= curve_fit(func, x_linspace, y_differences)
     # plt.plot(x_linspace, func(x_linspace, *popt[0]))
