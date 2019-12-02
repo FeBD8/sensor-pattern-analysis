@@ -1,7 +1,6 @@
 {
   "info": {
-    "input_file" : "/home/riccardo/PycharmProjects/sensor-pattern-analysis/motion-simulator/HF_out.csv",
-    "input_file_s" : "/home/riccardo/PycharmProjects/sensor-pattern-analysis/motion-simulator/HF_out.csv",
+    "input_file" : "/home/riccardo/PycharmProjects/sensor-pattern-analysis/motion-simulator/HF_out/HF_out.csv",
     "evaluation_file": "/home/riccardo/PycharmProjects/sensor-pattern-analysis/motion-simulator/output_evaluation.csv",
     "adj_file": "/home/riccardo/PycharmProjects/sensor-pattern-analysis/motion-simulator/configurations.json",
     "time_speed": 50,

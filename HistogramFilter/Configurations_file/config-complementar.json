@@ -3,13 +3,15 @@
     "input_file_path" : "/home/riccardo/PycharmProjects/sensor-pattern-analysis/motion-simulator/",
     "input_file_name" :"HF_input.csv",
     "ground_truth_file_name": "out.csv",
+    "output_file_path": "/home/riccardo/PycharmProjects/sensor-pattern-analysis/motion-simulator/HF_out/",
     "output_file_name": "HF_out_complementar.csv",
     "state_domain": ["A","K","L","T","B"],
     "room_name" : ["atrium","kitchen","livingroom","toilet", "bedroom"],
     "columns_name": ["Time", "bel(A)", "bel(K)", "bel(L)", "bel(T)", "bel(B)"],
     "output_evaluation": "output_evaluation_complementar.csv",
     "img_evaluation" : "evaluate_complementar.png",
-    "movement_transaction": "01"
+    "movement_transaction": "01",
+    "adj_file": "/home/riccardo/PycharmProjects/sensor-pattern-analysis/motion-simulator/configurations.json"
   },
 
   "probability": {

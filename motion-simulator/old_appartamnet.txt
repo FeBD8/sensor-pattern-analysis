@@ -1,9 +1,0 @@
-    "kitchen" : ["atrium1"],
-    "atrium1" : ["kitchen", "corridor", "livingroom1", "atrium2"],
-    "atrium2" : ["atrium1", "diningroom", "livingroom2"],
-    "livingroom1" : ["atrium1", "livingroom2"],
-    "livingroom2" : ["atrium2", "livingroom1"],
-    "diningroom" : ["atrium2", "corridor"],
-    "toilet" : ["corridor"],
-    "bedroom" : ["corridor"],
-    "corridor": ["toilet", "bedroom", "atrium1", "diningroom"]

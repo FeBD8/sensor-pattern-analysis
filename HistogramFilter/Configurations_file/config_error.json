@@ -3,22 +3,24 @@
     "input_file_path" : "/home/riccardo/PycharmProjects/sensor-pattern-analysis/motion-simulator/",
     "input_file_name" :"HF_input.csv",
     "ground_truth_file_name": "out.csv",
-    "output_file_name": "HF_out_complementar_notequals.csv",
+    "output_file_path": "/home/riccardo/PycharmProjects/sensor-pattern-analysis/motion-simulator/HF_out/",
+    "output_file_name": "HF_out_error.csv",
     "state_domain": ["A","K","L","T","B"],
     "room_name" : ["atrium","kitchen","livingroom","toilet", "bedroom"],
     "columns_name": ["Time", "bel(A)", "bel(K)", "bel(L)", "bel(T)", "bel(B)"],
-    "output_evaluation": "output_evaluation_complementar_notequals.csv",
-    "img_evaluation" : "evaluate_complementar_notequals.png",
-    "movement_transaction": "01"
+    "output_evaluation": "output_evaluation_error.csv",
+    "img_evaluation" : "evaluate_error.png",
+    "movement_transaction": "01",
+    "adj_file": "/home/riccardo/PycharmProjects/sensor-pattern-analysis/motion-simulator/configurations.json"
   },
 
   "probability": {
     "bel_t0" : [0.2,0.2,0.2,0.2,0.2],
-    "probA" : [0.7,0.3,0,0,0],
-    "probB" : [0,0.1,0.1,0.1,0.7],
-    "probL" : [0,0.1,0.7,0.1,0.1],
-    "probT" : [0,0.1,0.1,0.7,0.1],
-    "probK" : [0,0.7,0.1,0.1,0.1]
+    "probA" : [0.2,0.2,0.2, 0.2,0.2],
+    "probB" : [0.2,0.2,0.2,0.2,0.2],
+    "probL" : [0.33,0.33,0.33,0,0.33],
+    "probT" : [0.33,0.33,0,0.33,0.33],
+    "probK" : [0.2,0.2,0.2,0.2,0.2]
   },
   "sensor_error_probability" : {
     "sA" : {

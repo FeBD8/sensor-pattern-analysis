@@ -1,0 +1,39 @@
+{
+  "room" : {
+    "atrium" : ["livingroom","kitchen","hallway"],
+    "livingroom" : ["atrium"],
+    "kitchen" : ["atrium"],
+    "hallway" : ["atrium","toilet","bedroom1","bedroom2","bedroom3"],
+    "toilet" : ["hallway"],
+    "bedroom1" : ["hallway"],
+    "bedroom2" : ["hallway"],
+    "bedroom3" : ["hallway"]
+  },
+  "time" : {
+    "START_TIME" : 0.0,
+    "STOP_TIME" : 10000.0,
+    "lower_long_waiting_time" : [181, 160, 150, 160, 150,181, 160, 150, 160, 150],
+    "upper_long_waiting_time" : [600, 600, 650, 600, 600,600, 600, 650, 600, 600],
+    "seed_long_waiting_time": [3,3, 3, 3, 3,3,3, 3, 3, 3],
+    "lower_short_waiting_time" : [5, 5, 5, 5, 5,5, 5, 5, 5, 5],
+    "upper_short_waiting_time" : [179, 160, 190,160, 190,179, 160, 190,160, 190],
+    "seed_short_waiting_time": [3, 3, 3, 3, 3,3, 3, 3, 3, 3],
+    "sensor_sleep_time": 180,
+    "system_time_delta": 0.1,
+    "sensor_sample_time": 1.0,
+    "epsilon": 0.001
+  },
+  "probability" : {
+    "sensor_prob_error" : 0.1,
+    "probability_of_staying" : [0.4, 0.6, 0.5, 0.6, 0.5,0.4, 0.6, 0.5, 0.6, 0.5],
+    "probability_of_short_moving_behaviour": [0.5, 0.6, 0.9,0.6, 0.9,0.5, 0.6, 0.9,0.6, 0.9]
+  },
+  "info" : {
+    "output_simulator" : "HF_input_house1.csv",
+    "output_movement" : "out.csv",
+    "output_sensors" : "out_sensors.csv",
+    "output_time": "out_time.csv",
+    "debug_mode"  : "off",
+    "person_number" : 1
+  }
+}
