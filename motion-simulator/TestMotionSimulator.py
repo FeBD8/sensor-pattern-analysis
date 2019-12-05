@@ -92,7 +92,7 @@ if __name__ == "__main__":
     #    print("Manca il nome del file json")
     #    sys.exit(1)
 
-    configurator = config.SystemConfig("configurations_house1.json")
+    configurator = config.SystemConfig("configurations.json")
     check_running_mode(configurator)
     sensor_error_logger = ErrorLogger.ErrorLogger()
     n_of_person = configurator.init_person_number()

@@ -30,9 +30,9 @@
   },
   "info" : {
     "output_simulator" : "HF_input_house1.csv",
-    "output_movement" : "out.csv",
-    "output_sensors" : "out_sensors.csv",
-    "output_time": "out_time.csv",
+    "output_movement" : "out_house1.csv",
+    "output_sensors" : "out_sensors_house1.csv",
+    "output_time": "out_time_house1.csv",
     "debug_mode"  : "off",
     "person_number" : 1
   }

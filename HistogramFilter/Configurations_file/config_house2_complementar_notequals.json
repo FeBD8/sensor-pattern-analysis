@@ -2,7 +2,7 @@
   "info" : {
     "input_file_path" : "/home/riccardo/PycharmProjects/sensor-pattern-analysis/motion-simulator/",
     "input_file_name" :"HF_input_house2.csv",
-    "ground_truth_file_name": "out.csv",
+    "ground_truth_file_name": "out_house2.csv",
     "output_file_path": "/home/riccardo/PycharmProjects/sensor-pattern-analysis/motion-simulator/HF_out/",
     "output_file_name": "HF_out_house2_complementar_notequals.csv",
     "state_domain": ["A1","L","K1","H","T1","B1","B2","B3","S","A2","K2","B4","T2","LU1","LU2"],
