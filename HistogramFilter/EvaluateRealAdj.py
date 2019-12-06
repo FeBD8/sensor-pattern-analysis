@@ -232,18 +232,18 @@ def main_dynamic(file_correct, hf_out_dynamic, window):
         index=False)
     fig = plt.figure()
     fig.set_size_inches(14, 11)
-    gs = gridspec.GridSpec(3, 11)
-    ax0 = plt.subplot(gs[0:2, 0:2])  # row 0, col 0
+    gs = gridspec.GridSpec(2, 3)
+    ax0 = plt.subplot(gs[0, 0])  # row 0, col 0
     ax0.set(xlabel='Time', ylabel='Efficiency')
     df.plot(kind='line', x='Time', y='Efficiency', ax=ax0, color="lightcoral")
     df_error.plot(kind='line', x='Time', y='Efficiency_error', ax=ax0, linestyle='--', dashes=(8, 5), color="blue")
-    ax1 = plt.subplot(gs[0:2, 2:4])  # row 0, col 1
+    ax1 = plt.subplot(gs[0, 1])  # row 0, col 1
     ax1.set_ylim([-1, 1])
     ax1.set(xlabel='Time', ylabel='Difference\nSimulation - Real')
     ax1.plot(time, differencies)
     integral_text = ax1.text(0, -0.5, 10, bbox={'facecolor': 'yellow', 'alpha': 0.7, 'pad': 10})
     integral_text.set_text("Integral: " + str(round(integral)))
-    ax2 = plt.subplot(gs[0:2, 4:6])  # row 0, col 2
+    ax2 = plt.subplot(gs[0, 2])  # row 0, col 2
     ax2.set(ylabel='Histogram filter normalized adjacencies')
     edge_labels_ordered = OrderedDict(sorted(edge_labels.items(), key=lambda x: x[1], reverse=True))
     dict_hist = dict_histog(config)
@@ -258,19 +258,21 @@ def main_dynamic(file_correct, hf_out_dynamic, window):
     plt.bar(y_pos, performance, align='center', alpha=0.5, color=bar_color)
     plt.xticks(y_pos, objects, rotation=90)
 
-    ax3 = plt.subplot(gs[0:2, 6:11])
-    heatmap = plt.imread("./Heatmap_images/Heatmap" + str(window) + ".png")
-    ax3.get_xaxis().set_visible(False)
-    ax3.get_yaxis().set_visible(False)
-    ax3.imshow(heatmap, aspect='auto')
 
+    ax3 = plt.subplot(gs[1,:])  # row 1, span all columns
     pos = nx.circular_layout(G, center=[1, 0], scale=1)  # graph
-    ax4 = plt.subplot(gs[2,:])  # row 1, span all columns
-    nx.draw_networkx_edge_labels(G, ax=ax4, pos=pos, edge_labels=edge_labels, font_color='red')
-    nx.draw_networkx(G, ax=ax4, node_size=1000, pos=pos, node_color="skyblue")
+    nx.draw_networkx_edge_labels(G, ax=ax3, pos=pos, edge_labels=edge_labels, font_color='red')
+    nx.draw_networkx(G, ax=ax3, node_size=1000, pos=pos, node_color="skyblue")
     plt.tight_layout()
-    # plt.show()
-    fig.savefig(config["info"]["input_file_path"] + "/Evaluate_images/dynamic" + str(window) + "_" + config["info"][
+    #plt.show()
+    fig.savefig(config["info"]["input_file_path"] + "/Evaluate_images/1dynamic" + str(window) + "_" + config["info"][
+        "img_evaluation"])
+
+    ax3.clear()
+    heatmap = plt.imread("./Heatmap_images/Heatmap" + str(window) + ".png")
+    ax3.axis("off")
+    ax3.imshow(heatmap)
+    fig.savefig(config["info"]["input_file_path"] + "/Evaluate_images/2dynamic" + str(window) + "_" + config["info"][
         "img_evaluation"])
 
 if __name__ == "__main__":

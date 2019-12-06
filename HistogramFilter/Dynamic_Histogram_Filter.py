@@ -8,6 +8,8 @@ import ReadFile
 import pandas as pd
 import matplotlib.pyplot as plt
 
+DEBUG = True
+
 
 def open_json(conf):
     with open(conf) as json_config:
@@ -38,30 +40,30 @@ def system_set_up(data_config):
 
 def adj_dict(data_config):
     adj_dict = {}
-    dict_prob = {}
+    dict_col_index = {}
     for i, c in enumerate(data_config["info"]["columns_name"][1:]):
-        dict_prob[c] = i
+        dict_col_index[c] = i
         for n, col in enumerate(data_config["info"]["columns_name"][1:]):
             if i != n:
                 adj_dict[str(c) + str(col)] = 0
-    return adj_dict, dict_prob
+    return adj_dict, dict_col_index
 
 
-def found_max(df, df_1, adj_dict, dict_prob, prob_state, sim_adj, col_dic):
+def found_max(df, df_1, adj_dict, dict_col_index, prob_state, sim_adj, col_dic):
     res = df.iloc[1:]
     res_1 = df_1.iloc[1:]
     index_max = res.idxmax()
     index_max_1 = res_1.idxmax()
     if index_max != index_max_1:
         adj_dict[index_max_1 + index_max] += 1
-        new_prob_state(prob_state, adj_dict, dict_prob, index_max_1, sim_adj, col_dic)
+        new_prob_state(prob_state, adj_dict, dict_col_index, index_max_1, sim_adj, col_dic)
 
 
-def new_prob_state(prob_state, adj_dict, dict_prob, index_1, sim_adj, col_dic):
-    prob_state[dict_prob[index_1]][dict_prob[index_1]] = 0.2
+def new_prob_state(prob_state, adj_dict, dict_col_index, index_1, sim_adj, col_dic):
+    prob_state[dict_col_index[index_1]][dict_col_index[index_1]] = 0.2
     for c in columns[1:]:
         if c != index_1:
-            prob_state[dict_prob[index_1]][dict_prob[c]] = (adj_dict[index_1 + c] / normalized_prob(index_1, adj_dict))
+            prob_state[dict_col_index[index_1]][dict_col_index[c]] = (adj_dict[index_1 + c] / normalized_prob(index_1, adj_dict))
 
 
 def normalized_prob(index_1, adj_dict):
@@ -97,9 +99,10 @@ def crate_file_output(df1: pd.DataFrame, df2, data_config, window):
         df1.loc[i, 'Room'] = r  # aggiungo le stanze in cui la persona si trova realmente da out.csv
 
     df = pd.merge(df1, df2, how='inner')
-    df.to_csv(data_config["info"]["input_file_path"] + "HF_out/dynamic" + str(window) +"minutes_"+ data_config["info"][
-        "output_file_name"] ,
-              index=False)
+    df.to_csv(
+        data_config["info"]["input_file_path"] + "HF_out/dynamic" + str(window) + "minutes_" + data_config["info"][
+            "output_file_name"],
+        index=False)
 
 
 def dictionary_room(data_config):
@@ -126,7 +129,7 @@ def main(window):
     df = pd.DataFrame(columns=columns)
     i = 0
     sensor_measures_previous = [0 for x in range(0, len(belief.bel))]
-    adj_dic, dict_prob = adj_dict(config)  # matrice adiacenze e matrice colonna-indice
+    adj_dic, dict_col_index = adj_dict(config)  # matrice adiacenze e matrice colonna-indice
     col_dic = dictionary_room(config)  # matrice colonna-stanza
     nps = []
     sim_adj = sim_file["room"]
@@ -150,29 +153,30 @@ def main(window):
             tmp[columns[j]] = values[j]
         df = df.append(tmp, ignore_index=True)
         if i != 0:
-            found_max(df.iloc[i], df.iloc[i - 1], adj_dic, dict_prob, n_prob_state, sim_adj, col_dic)
+            found_max(df.iloc[i], df.iloc[i - 1], adj_dic, dict_col_index, n_prob_state, sim_adj, col_dic)
         sensor_measures_previous = sensor_measures  # assegno a previous la misura precedente dei sensori
         i += 1
         if i % (60 * window) == 0 and i != 0:
             belief.prob_state = n_prob_state
     rooms = config["info"]["room_name"]
     fig, ax = plt.subplots()
-
     for colum in columns[1:]:
         for c, col in enumerate(columns[1:]):
-            if col!=colum:
+            neg=-1
+            if col != colum:
                 for room in sim_adj[col_dic[colum]]:
                     if room == col_dic[col]:
-                        n_prob_state[dict_prob[colum]][c] = abs(n_prob_state[dict_prob[colum]][c])
+                        n_prob_state[dict_col_index[colum]][c] = abs(n_prob_state[dict_col_index[colum]][c])
                         break
-                    elif colum != col:
-                        n_prob_state[dict_prob[colum]][c]= n_prob_state[dict_prob[colum]][c] * -1
+                    else:
+                        n_prob_state[dict_col_index[colum]][c] = n_prob_state[dict_col_index[colum]][c] * neg
+                        neg=1
     print(n_prob_state)
     print(adj_dic)
-    im, cbar = Heatmap.heatmap(n_prob_state, rooms, rooms, ax=ax,
+    im, cbar = Heatmap.heatmap(n_prob_state, rooms, rooms, sim_adj,columns, dict_col_index,col_dic, ax=ax,
                                cmap="RdYlGn", cbarlabel="probability",
-                               cbar_kw={'ticks': [np.min(n_prob_state),0.1, np.max(n_prob_state)]})
-    cbar.ax.set_yticklabels(['Wrong\nlink','Weak\nReal\nlink', 'Real\nlink '])
+                               cbar_kw={'ticks': [np.min(n_prob_state)-1, np.max(n_prob_state)+1]})
+    cbar.ax.set_yticklabels(['Wrong\nlink', 'Real\nlink '])
     texts = Heatmap.annotate_heatmap(im, data=n_prob_state, valfmt="{x:.3f}")
     fig.tight_layout()
     fig.savefig("./Heatmap_images/" + "Heatmap" + str(window))

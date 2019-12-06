@@ -2,7 +2,8 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
-def heatmap(data, row_labels, col_labels, ax=None,
+
+def heatmap(data, row_labels, col_labels, sim_adj, columns, dict_col_index,col_dic, ax=None,
             cbar_kw={}, cbarlabel="", **kwargs):
     """
     Create a heatmap from a numpy array and two lists of labels.
@@ -29,8 +30,22 @@ def heatmap(data, row_labels, col_labels, ax=None,
     if not ax:
         ax = plt.gca()
 
+    data2 = np.zeros(data.shape)
     # Plot the heatmap
-    im = ax.imshow(data, **kwargs)
+    for colum in columns[1:]:
+        for c, col in enumerate(columns[1:]):
+            offset = 1
+            if col == colum:
+                data2[dict_col_index[colum], c] = data[dict_col_index[colum], c] + offset
+            else:
+                for room in sim_adj[col_dic[colum]]:
+                    if room == col_dic[col]:
+                        offset = 1
+                        break
+                    elif colum != col:
+                        offset = -1
+            data2[dict_col_index[colum], c] = data[dict_col_index[colum], c] + offset
+    im = ax.imshow(data2, **kwargs)
 
     # Create colorbar
     cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)
@@ -55,8 +70,8 @@ def heatmap(data, row_labels, col_labels, ax=None,
     for edge, spine in ax.spines.items():
         spine.set_visible(False)
 
-    ax.set_xticks(np.arange(data.shape[1]+1)-.5, minor=True)
-    ax.set_yticks(np.arange(data.shape[0]+1)-.5, minor=True)
+    ax.set_xticks(np.arange(data.shape[1] + 1) - .5, minor=True)
+    ax.set_yticks(np.arange(data.shape[0] + 1) - .5, minor=True)
     ax.grid(which="minor", color="w", linestyle='-', linewidth=3)
     ax.tick_params(which="minor", bottom=False, left=False)
 
@@ -98,7 +113,7 @@ def annotate_heatmap(im, data=None, valfmt="{x:.2f}",
     if threshold is not None:
         threshold = im.norm(threshold)
     else:
-        threshold = im.norm(data.max())/2.
+        threshold = im.norm(data.max()) / 2.
 
     # Set default alignment to center, but allow it to be
     # overwritten by textkw.
