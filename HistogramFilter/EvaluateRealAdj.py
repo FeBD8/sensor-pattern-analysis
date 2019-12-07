@@ -24,16 +24,20 @@ def open_json(file_name):
 
 
 def set_up(data_config):
+    """
+    Function that return the HF_out given by the chosen config.json
+    """
     data = ReadFile.ReadFile(data_config["info"]["output_file_path"] + data_config["info"]["output_file_name"]).df
     return data
 
 
-"""
-    Dictionary [key='the name of the room' : value='the index of the column with the probability of the room' 
-"""
-
-
 def dictionary_room(data_config):
+    """
+    Dictionary [key='the name of the room' : value='the index of the column with the probability of the room']
+    :param data_config: config.json or config_house1.json or config_house2.json ; all the file with the correct adjacency values
+    :return: dictionary
+    :rtype: dict
+    """
     key = data_config["info"]["room_name"]
     value = data_config["info"]["columns_name"][1:]
     dictionary = {}
@@ -43,6 +47,13 @@ def dictionary_room(data_config):
 
 
 def dict_histog(data_config):
+    """
+    Dictionary [key='the name of the room' : value='the first one or two letters used to identify a room']
+
+    :param data_config: config.json or config_house1.json or config_house2.json ; all the file with the correct adjacency values
+    :return: dictionary
+    :rtype: dict
+    """
     key = data_config["info"]["room_name"]
     value = data_config["info"]["state_domain"]
     dictionary = {}
@@ -51,12 +62,15 @@ def dict_histog(data_config):
     return dictionary
 
 
-"""
-    Found the max value between the probability of the rooms 
-"""
-
-
 def found_max(probability_array: pd.Series, data_config):
+    """
+    Found the max value between the probability of the rooms given by the Histogram Filter
+
+    :param probability_array: the row of HF_out
+    :type: pd.Series
+    :param data_config: config.json or config_house1.json or config_house2.json ; all the file with the correct adjacency values
+    :return: max value of probability and its index
+    """
     constant = len(data_config["info"]["state_domain"]) + 2
     res = probability_array.iloc[constant:].apply(float)
     val_max = res.max()
@@ -65,6 +79,16 @@ def found_max(probability_array: pd.Series, data_config):
 
 
 def color_bar(sim_config, filter_adj):
+    """
+    Function that create the colorbar for the histogram plot, if the adjacency is correct the color is green instead if
+    it is wrong the color is red
+
+    :param sim_config: the configurations.json used for doing TestMotionSimulator
+    :param filter_adj: all the adjacencies founded and sorted in descending order, edges of the Graph are used because
+    in this way duplicate adjacencies are removed easily
+    :type: networkx.Graph.edges
+    :return: array for color that the histogram plot need
+    """
     colors = np.empty(len(filter_adj), dtype=object)
     dict_adj = sim_config["room"]
     for i, k in enumerate(filter_adj):
@@ -78,6 +102,16 @@ def color_bar(sim_config, filter_adj):
 
 
 def main_static(file_correct, file_wrong):
+    """
+    Main function that compare the efficiency between two HF_out given by two different config.json.
+    The function plot the evaluation,the difference from the evaluation and the sum of this difference,the histogram of
+    the adjacencies founded and the graph of these adjacencies.
+    All the adjacencies are created when the max probability of the Histogram Filter change.
+    The final figure is saved in motion-simulator/Evaluate_images/
+
+    :param file_correct: is the correct config.json (config.json,config_house1.json,config_house2.json)
+    :param file_wrong: one of the wrong file in Configurations_file
+    """
     # if len(sys.argv) < 2:
     #    print("Manca il nome del file json")
     #    sys.exit(1)
@@ -173,6 +207,23 @@ def main_static(file_correct, file_wrong):
 
 
 def main_dynamic(file_correct, hf_out_dynamic, window):
+    """
+    Main function that compare the efficiency between two HF_out given by one config.json and hf_out_dynamic.
+    The function plot(1) the evaluation,the difference from the evaluation and the sum of this difference,the histogram of
+    the adjacencies founded and the graph of these adjacencies.
+    It also plot in another figure(2) the same as before except for the graph that is substituted by the Heatmap in
+    ./Heatmap_images of the dynamic file given
+    All the adjacencies are created when the max probability of the Histogram Filter change.
+    The two finals figure is saved in motion-simulator/Evaluate_images/Dynamic
+
+    :param file_correct: is the correct config.json (config.json,config_house1.json,config_house2.json)
+    :param hf_out_dynamic: is the respective HF_out of config_fullyconn.json
+    (config_fullyconn.json,config_fullyconn_house1.json,config_fullyconng_house2.json). This because the hf_out_dynamic
+    is created from these files.
+    :type: csv
+    :param window: amount of minutes that identify every my dynamic file.(More details on Dynamic_Histogram_Filter)
+    :type: int
+    """
     # if len(sys.argv) < 2:
     #    print("Manca il nome del file json")
     #    sys.exit(1)
@@ -202,6 +253,7 @@ def main_dynamic(file_correct, hf_out_dynamic, window):
         differencies.append(state - state_error)
         integral += abs(differencies[i])
         time.append(data.loc[i, 'Time'])
+        print(time)
         i += 1
     key_values = list(dictionary_rooms.keys())
     G = nx.Graph()
@@ -265,17 +317,17 @@ def main_dynamic(file_correct, hf_out_dynamic, window):
     nx.draw_networkx(G, ax=ax3, node_size=1000, pos=pos, node_color="skyblue")
     plt.tight_layout()
     #plt.show()
-    fig.savefig(config["info"]["input_file_path"] + "/Evaluate_images/1dynamic" + str(window) + "_" + config["info"][
+    fig.savefig(config["info"]["input_file_path"] + "/Evaluate_images/Dynamic//dynamic_house2/1dynamic" + str(window) + "_" + config["info"][
         "img_evaluation"])
 
     ax3.clear()
     heatmap = plt.imread("./Heatmap_images/Heatmap" + str(window) + ".png")
     ax3.axis("off")
     ax3.imshow(heatmap)
-    fig.savefig(config["info"]["input_file_path"] + "/Evaluate_images/2dynamic" + str(window) + "_" + config["info"][
+    fig.savefig(config["info"]["input_file_path"] + "/Evaluate_images/Dynamic/dynamic_house2/2dynamic" + str(window) + "_" + config["info"][
         "img_evaluation"])
 
 if __name__ == "__main__":
     # main_static("config_house1.json","config_house1.json")
-    for w in [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 120, 140, 166]:
-        main_dynamic("config.json", "dynamic"+str(w)+"minutes_HF_out_fullyconn.csv", w)
+    for w in [10, 100, 200, 300,400, 500, 600, 700, 800, 900, 1200, 1400, 1600]:
+        main_dynamic("config_house2.json", "dynamic"+str(w)+"minutes_HF_out_house2_fullyconn.csv", w)
