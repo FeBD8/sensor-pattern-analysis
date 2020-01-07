@@ -120,8 +120,8 @@ def main_static(file_correct, file_wrong):
     config = open_json(conf_file)
     conf_real_adj_file = folder + file_wrong  # file2 wrong
     config_error = open_json(conf_real_adj_file)
-    df = pd.DataFrame(columns=['Time', 'Efficiency'])
-    df_error = pd.DataFrame(columns=['Time', 'Efficiency_error'])
+    df = pd.DataFrame(columns=['Time', 'Efficiency real'])
+    df_error = pd.DataFrame(columns=['Time', 'Efficiency fully-connected'])
     data = set_up(config)  # HF_out
     data_error = set_up(config_error)
     i = 0
@@ -136,8 +136,8 @@ def main_static(file_correct, file_wrong):
         rooms_index_error.append(index)
         state = data.loc[i, dictionary_rooms[data.loc[i, 'Room']]] / max_room
         state_error = data_error.loc[i, dictionary_rooms[data_error.loc[i, 'Room']]] / max_room_error
-        temp = {'Time': data.loc[i, 'Time'], 'Efficiency': state}
-        temp_error = {'Time': data_error.loc[i, 'Time'], 'Efficiency_error': state_error}
+        temp = {'Time': data.loc[i, 'Time'], 'Efficiency real': state}
+        temp_error = {'Time': data_error.loc[i, 'Time'], 'Efficiency fully-connected': state_error}
         df_error = df_error.append(temp_error, ignore_index=True)
         df = df.append(temp, ignore_index=True)
         differencies.append(state - state_error)
@@ -175,11 +175,11 @@ def main_static(file_correct, file_wrong):
     gs = gridspec.GridSpec(2, 3)
     ax0 = plt.subplot(gs[0, 0])  # row 0, col 0
     ax0.set(xlabel='Time', ylabel='Efficiency')
-    df.plot(kind='line', x='Time', y='Efficiency', ax=ax0, color="lightcoral")
-    df_error.plot(kind='line', x='Time', y='Efficiency_error', ax=ax0, linestyle='--', dashes=(8, 5), color="blue")
+    df.plot(kind='line', x='Time', y='Efficiency real', ax=ax0, color="lightcoral")
+    df_error.plot(kind='line', x='Time', y='Efficiency fully-connected', ax=ax0, linestyle='--', dashes=(6, 5), color="blue")
     ax1 = plt.subplot(gs[0, 1])  # row 0, col 1
     ax1.set_ylim([-1, 1])
-    ax1.set(xlabel='Time', ylabel='Difference\nSimulation - Real')
+    ax1.set(xlabel='Time', ylabel='Difference\nReal - Fully-connected')
     ax1.plot(time, differencies)
     ax2 = plt.subplot(gs[0, 2])  # row 0, col 2
     ax2.set(ylabel='Histogram filter normalized adjacencies')
@@ -253,7 +253,6 @@ def main_dynamic(file_correct, hf_out_dynamic, window):
         differencies.append(state - state_error)
         integral += abs(differencies[i])
         time.append(data.loc[i, 'Time'])
-        print(time)
         i += 1
     key_values = list(dictionary_rooms.keys())
     G = nx.Graph()
@@ -328,6 +327,7 @@ def main_dynamic(file_correct, hf_out_dynamic, window):
         "img_evaluation"])
 
 if __name__ == "__main__":
-    # main_static("config_house1.json","config_house1.json")
-    for w in [10, 100, 200, 300,400, 500, 600, 700, 800, 900, 1200, 1400, 1600]:
-        main_dynamic("config_house2.json", "dynamic"+str(w)+"minutes_HF_out_house2_fullyconn.csv", w)
+    """main_static("config.json","config.json")"""
+
+    for w in [700]:
+        main_dynamic("config_house1.json", "dynamic"+str(w)+"minutes_HF_out_house1_fullyconn.csv", w)

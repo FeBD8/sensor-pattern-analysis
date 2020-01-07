@@ -66,7 +66,7 @@ if __name__ == "__main__":
     #    print("Manca il nome del file json")
     #    sys.exit(1)
     folder = "Configurations_file/"
-    conf_file = folder + "config.json"
+    conf_file = folder + "config_house2.json"
     config = open_json(conf_file)
 
     belief, rf = system_set_up(config)  # carica e inizializza

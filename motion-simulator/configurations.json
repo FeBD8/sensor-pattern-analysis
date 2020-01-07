@@ -8,7 +8,7 @@
   },
   "time" : {
     "START_TIME" : 0.0,
-    "STOP_TIME" : 100000.0,
+    "STOP_TIME" : 10000.0,
     "lower_long_waiting_time" : [181, 160, 150, 160, 150,181, 160, 150, 160, 150],
     "upper_long_waiting_time" : [600, 600, 650, 600, 600,600, 600, 650, 600, 600],
     "seed_long_waiting_time": [3,3, 3, 3, 3,3,3, 3, 3, 3],
@@ -26,7 +26,7 @@
     "probability_of_short_moving_behaviour": [0.5, 0.6, 0.9,0.6, 0.9,0.5, 0.6, 0.9,0.6, 0.9]
   },
   "info" : {
-    "output_simulator" : "HF_input.csv",
+    "output_simulator" : "HF_input_prova.csv",
     "output_movement" : "out.csv",
     "output_sensors" : "out_sensors.csv",
     "output_time": "out_time.csv",

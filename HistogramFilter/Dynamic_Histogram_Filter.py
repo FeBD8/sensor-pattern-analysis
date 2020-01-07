@@ -65,6 +65,10 @@ def adj_dict(data_config):
 
 
 def found_max(df, df_1, adj_dict, dict_col_index, prob_state, correct_matrix):
+    """
+    Function that found every change between the probability given by the filter and update the Transition Matrix with Function
+    new_prob_state.
+    """
     res = df.iloc[1:]
     res_1 = df_1.iloc[1:]
     index_max = res.idxmax()
@@ -75,19 +79,25 @@ def found_max(df, df_1, adj_dict, dict_col_index, prob_state, correct_matrix):
 
 
 def new_prob_state(prob_state, adj_dict, dict_col_index, index_1, correct_matrix):
+    """
+    Function that update the new Transitions Matrix.
+    """
     prob_state[dict_col_index[index_1]][dict_col_index[index_1]] = correct_matrix["bel_t0"][0]
     for c in columns[1:]:
         if c != index_1:
             prob_state[dict_col_index[index_1]][dict_col_index[c]] = (
-                    adj_dict[index_1 + c] / normalized_prob(index_1, adj_dict))
+                    adj_dict[index_1 + c] / normalized_prob(index_1, adj_dict, correct_matrix))
 
 
-def normalized_prob(index_1, adj_dict):
+def normalized_prob(index_1, adj_dict, correct_matrix):
+    """
+    Function that normalized all Transitions Matrix values of the row taken into consideration to the value of 1-autovalue.
+    """
     sum = 0
     for c in columns[1:]:
         if c != index_1:
             sum += adj_dict[index_1 + c]
-    normalized_sum = sum / 0.8
+    normalized_sum = sum / (1-correct_matrix["bel_t0"][0])
     return normalized_sum
 
 
@@ -136,7 +146,7 @@ def main(config_file, correct_file, window):
     adjacency it updates the row belonging to this adjacency(e.g.: atrium-kitchen the row is the first because atrium is
     the first room).
     Every auto adjacency(e.g.: atrium-atrium) is fixed to 1 / number of rooms
-    The other values of the row are normalized to 0.8
+    The other values of the row are normalized to 1-auto adjacency
 
     :param window: fixed time before Histogram Filter becomes dynamic
     """
@@ -184,7 +194,7 @@ def main(config_file, correct_file, window):
             found_max(df.iloc[i], df.iloc[i - 1], adj_dic, dict_col_index, n_prob_state, correct_matrix)
         sensor_measures_previous = sensor_measures  # assegno a previous la misura precedente dei sensori
         i += 1
-        if i % (60 * window) == 0 and i != 0:
+        if i > (60 * window) and i != 0:
             belief.prob_state = n_prob_state
     rooms = config["info"]["room_name"]
     fig = plt.figure()
@@ -203,19 +213,23 @@ def main(config_file, correct_file, window):
                         neg = 1
     print(n_prob_state)
     print(adj_dic)
+
+    # Graphic side
     ax0 = plt.subplot(gs[0, 0])  # row 0, col 0
     im0, cbar0 = Heatmap.heatmap_offset(n_prob_state, rooms, rooms, sim_adj, columns, dict_col_index, col_dic, ax=ax0,
                                         cmap="RdYlGn", cbarlabel="probability",
-                                        cbar_kw={'ticks': [np.min(n_prob_state) - 1, np.max(n_prob_state) + 1]})
+                                        cbar_kw={'ticks': [-0.8, 0.8]})
     cbar0.remove()
-    texts = Heatmap.annotate_heatmap_GrRed(im0, data=n_prob_state, valfmt="{x:.2f}")
+    texts = Heatmap.annotate_heatmap_GrRed(im0, data=n_prob_state, valfmt="{x:.3f}")
 
     ax1 = plt.subplot(gs[0, 1])  # row 0, col 1
     data2 = copy.copy(n_prob_state)
     for colum in pos[:]:  # see difference between these values and ideal ones
         for c, col in enumerate(columns[1:]):
             offset = 0
-            if col != "bel(" + colum + ")":
+            if col == "bel(" + colum + ")":
+                data2[dict_col_index["bel(" + colum + ")"]][c] = 0.5
+            else:
                 for room in sim_adj[col_dic["bel(" + colum + ")"]]:
                     if room == col_dic[col]:
                         if data2[dict_col_index["bel(" + colum + ")"]][c] - correct_matrix["prob" + colum][c] >= 0:
@@ -239,16 +253,16 @@ def main(config_file, correct_file, window):
                 if offset == 0.5:
                     data2[dict_col_index["bel(" + colum + ")"]][c] += offset
     im1, cbar1 = Heatmap.heatmap(data2, rooms, rooms, sim_adj, columns, dict_col_index, col_dic, ax=ax1,
-                                 cmap="Reds", cbarlabel="probability",
-                                 cbar_kw={'ticks': [np.min(data2), np.max(data2)]})
+                                 cmap="Reds",
+                                 cbar_kw={'ticks': [np.min(data2), 0.5]})
     cbar1.ax.set_yticklabels(['Bad', 'Good'])
-    texts = Heatmap.annotate_heatmap_Reds(im1, data=n_prob_state, data2=data2, valfmt="{x:.2f}")
+    texts = Heatmap.annotate_heatmap_Reds(im1, data=n_prob_state, data2=data2, valfmt="{x:.3f}")
 
     # plt.tight_layout()
-    fig.savefig("./Heatmap_images/" + "Heatmap_house2_" + str(window))
+    fig.savefig("./Heatmap_images/" + "Heatmap" + str(window))
     crate_file_output(data_in, df, config, window)
 
 
 if __name__ == "__main__":
-    for v in [10, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1200, 1400, 1600]:
-        main("config_house2_fullyconn.json", "config_house2.json", v)
+    for v in [10]:
+        main("config_fullyconn.json", "config.json", v)

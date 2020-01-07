@@ -38,6 +38,12 @@ def set_probability(i):
     x = 0
     for bel in df.iloc[i][len(configurator2["room"]) + 2:(len(configurator2["room"]) + 1) * 2]:
         value = '%.3f' % bel
+        if bel > 0.8:
+            probabilities[x].set_color("cyan")
+            labels[df.columns[1:len(configurator2["room"]) + 1][x]].set_color("cyan")
+        else:
+            probabilities[x].set_color("black")
+            labels[df.columns[1:len(configurator2["room"]) + 1][x]].set_color("black")
         probabilities[x].set_text(value)
         x += 1
 
@@ -210,7 +216,7 @@ if __name__ == "__main__":
                             fontsize=configurator["correct_room"]["font_size"])
     n_of_person = configurator2["info"]["person_number"]
     number_person = plt.text(configurator["text_area_numb"]["position"][0],
-                            configurator["text_area_numb"]["position"][1], "Number of person:"+ str(n_of_person),
+                            configurator["text_area_numb"]["position"][1], "Number of people:"+ str(n_of_person),
                             fontsize=configurator["text_area_numb"]["font_size"])
     df_ground_truth = utility.read_file(configurator["info"]["ground_truth_file"])
     G = nx.Graph()
@@ -232,7 +238,7 @@ if __name__ == "__main__":
         for adj in configurator2["room"][room]:
             G.add_edge(room, adj)
     pos = nx.spring_layout(G, center=[10, 13], scale=5)
-    nodes = nx.draw_networkx_nodes(G, pos=pos, with_labels="true", node_size=3400-(160*len(room_counter)), ax=ax)
+    nodes = nx.draw_networkx_nodes(G, pos=pos, with_labels="true", node_size=3400-(160*len(room_counter)), ax=ax,node_color="lightblue")
     edges = nx.draw_networkx_edges(G, pos=pos, with_labels="true", ax=ax, font_size=8,alpha=0.5)
     labels = nx.draw_networkx_labels(G, pos=pos, font_size=int(17-(0.2*len(room_counter))))  # 17
     probabilities = []

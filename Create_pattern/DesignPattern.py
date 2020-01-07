@@ -4,12 +4,37 @@ import sys
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
+"""
+Script that analyze all HF_out searching every sure adjacency and so creating a new adj_matrix
+
+sure_adjacency is when from only one sensor on the next instant there are two sensors on.
+E.g. : [0 0 0 1 0]
+       [0 0 1 1 0]
+The adjacency is from room of index [3] to room of index [2] 
+
+
+"""
 
 def func(x, a, b):
+    """
+    function used to create a curve fit
+    """
     return a * numpy.exp(-b * x)
 
 
 def adj_difference(real_matrix, prob_matrix):
+
+    """
+    function that sets all sure adjacencies to 1 and after that returns the number of missing adjacencies
+    between the new adj_matrix and the real one
+
+    :param real_matrix: the real matrix used for simulation
+    :type real_matrix: np.array
+    :param prob_matrix: the new matrix that this script creates
+    :type prob_matrix: np.array
+    :return: the number of missing adjacencies
+    :rtype: int
+    """
     for r,row in enumerate(prob_matrix):
         for col,value in enumerate(row):
             if value != 0:

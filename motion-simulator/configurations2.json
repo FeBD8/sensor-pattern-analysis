@@ -1,24 +1,14 @@
 {
   "room" : {
-    "atrium" : ["kitchen", "livingroom", "toilet", "bedroom","stanza1"],
-    "kitchen" : ["atrium","stanza1"],
-    "livingroom" : ["atrium","stanza2"],
-    "toilet" : ["atrium","stanza2"],
-    "bedroom" : ["atrium","stanza2"],
-    "stanza1" : ["atrium"],
-    "stanza2" : ["atrium","stanza2"],
-    "stanza3" : ["atrium","stanza2"],
-    "stanza4" : ["atrium"],
-    "stanza5" : ["atrium"],
-    "stanza6" : ["atrium"],
-    "stanza7" : ["atrium"],
-    "stanza8" : ["atrium"],
-    "stanza9" : ["atrium"],
-    "stanza10" : ["atrium"]
+    "atrium" : ["kitchen", "livingroom", "toilet", "bedroom"],
+    "kitchen" : ["atrium"],
+    "livingroom" : ["atrium"],
+    "toilet" : ["atrium"],
+    "bedroom" : ["atrium"]
   },
   "time" : {
     "START_TIME" : 0.0,
-    "STOP_TIME" : 10000.0,
+    "STOP_TIME" : 100000.0,
     "lower_long_waiting_time" : [181, 160, 150, 160, 150,181, 160, 150, 160, 150],
     "upper_long_waiting_time" : [600, 600, 650, 600, 600,600, 600, 650, 600, 600],
     "seed_long_waiting_time": [3,3, 3, 3, 3,3,3, 3, 3, 3],
@@ -41,6 +31,6 @@
     "output_sensors" : "out_sensors.csv",
     "output_time": "out_time.csv",
     "debug_mode"  : "off",
-    "person_number" : 10
+    "person_number" : 1
   }
 }

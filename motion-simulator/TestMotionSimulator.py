@@ -87,22 +87,16 @@ def create_simulation_info(model, n_of_person):
     sim_info.create_file()
 
 
-if __name__ == "__main__":
-    # if len(sys.argv) < 2:
-    #    print("Manca il nome del file json")
-    #    sys.exit(1)
-
-    configurator = config.SystemConfig("configurations.json")
+def main(config_file):
+    global apartment
+    configurator = config.SystemConfig(config_file)
     check_running_mode(configurator)
     sensor_error_logger = ErrorLogger.ErrorLogger()
     n_of_person = configurator.init_person_number()
-
     time = t.Time(configurator.init_start_time(), configurator.init_stop_time(), configurator.init_time_epsilon(),
                   configurator.init_system_time_delta())
-
     sensor_sample_time = configurator.init_sensor_sample_time()
     apartment, gateway = configurator.create_apartment(sensor_error_logger)
-
     model = []
     mat = []
     for i in range(0, n_of_person):
@@ -111,25 +105,28 @@ if __name__ == "__main__":
                       ddp.UniformDDp(configurator.init_short_model_lower(i), configurator.init_short_model_upper(i),
                                      configurator.init_short_model_seed(i), configurator.init_test_mode())])
         mat.append(human.Human(apartment, model[i]))
-
     movement_tracker = pd.DataFrame(columns=['Time', 'Room', 'Person'])
     times = pd.DataFrame(columns=['Time'])
     for i in range(0, n_of_person):
         mat[i].chose_start_room(configurator.init_p_of_staying(i), configurator.init_p_type_behaviour(i))
-
     sensor_sample(apartment, time.current_time, mat, gateway, n_of_person, times)
     for i in range(0, n_of_person):
         movement_tracker = movement_tracker.append({'Time': time.current_time, 'Room': mat[i].current_room.name,
                                                     'Person': i}, ignore_index=True)  # inizializzo il file di out.csv
     times = times.append({'Time': time.current_time}, ignore_index=True)
     time.increase_time()
-
     ret = simulate(movement_tracker, time, mat, sensor_sample_time, gateway, n_of_person, times)
-
     ret[0].to_csv(configurator.name_output_gran_truth(), index=False)  # ha tutti i movimenti della persona in out.csv
     ret[2][0].current_room.sensor.gateway.dataframe.to_csv(configurator.name_output_sensor(),
                                                            index=False)  # scrive i cambiamenti dei sensori
     ret[1].to_csv(configurator.output_time(), index=False)  # scrivo ogni cambiamento
     gateway.df_HF.to_csv(configurator.name_output_sim(), index=False)  # scrive tutti 0/1 delle stanze per istante
-
     create_simulation_info(model, n_of_person)
+
+
+if __name__ == "__main__":
+    # if len(sys.argv) < 2:
+    #    print("Manca il nome del file json")
+    #    sys.exit(1)
+    for i in ["configurations_house2.json"]:
+        main(i)
